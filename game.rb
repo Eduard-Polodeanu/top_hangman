@@ -1,3 +1,5 @@
+require "yaml"
+
 class Game
   attr_accessor :code, :attempts_left, :used_letters, :current_progress
 
@@ -16,17 +18,39 @@ class Game
     end
   end
 
-  def play
+  def start_game
+    loop do
+      puts "Do you want to start a new game or load a save file? [new/load]"
+      input = gets.chomp.upcase
+      return new_game if input == "NEW"
+      return load_game if input == "LOAD"
+    end
+  end
+
+  def new_game
+    puts "Starting new game..."
     create_code
-    puts code
+    # puts code
+    play
+  end
+
+  def load_game
+    puts "Loading game from save file..."
+    read_file = File.read("save_file.yml")
+    from_yaml(read_file)
+    # puts code
+    play
+  end
+
+  def play
     loop do
       show_progress
       play_round
-      if attempts_left == 0
-        puts "\nYou lost! No more attempts left."
-        break
-      elsif code == current_progress.join
+      if code == current_progress.join
         puts "\nYou won! The secret word was #{code}"
+        break
+      elsif attempts_left == 0
+        puts "\nYou lost! No more attempts left."
         break
       end
     end
@@ -43,9 +67,9 @@ class Game
 
   def ask_input
     loop do
-      puts "Choose a letter from the english alphabet. Make sure you didn't use that letter already."
+      puts "Choose a letter from the english alphabet. Make sure you didn't use that letter already. \n[save] to save the current progress"
       input = gets.chomp.upcase
-
+      save_game if input == "SAVE"
       return input unless input.length != 1 || !ALLOWED_LETTERS.include?(input) || used_letters.join.include?(input)
     end
   end
@@ -68,5 +92,27 @@ class Game
     return [] unless idx
 
     [idx + start] + find_char_indexes(string, char, idx + start + 1)
+  end
+
+  def save_game
+    File.write("save_file.yml", to_yaml)
+    puts "\nGame saved!"
+  end
+
+  def to_yaml
+    YAML.dump({
+                code: @code,
+                attempts_left: @attempts_left,
+                used_letters: @used_letters,
+                current_progress: @current_progress
+              })
+  end
+
+  def from_yaml(yaml_string)
+    data = YAML.load yaml_string
+    @code = data[:code]
+    @attempts_left = data[:attempts_left]
+    @used_letters = data[:used_letters]
+    @current_progress = data[:current_progress]
   end
 end

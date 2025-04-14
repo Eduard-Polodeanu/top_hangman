@@ -5,4 +5,4 @@ ALLOWED_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".freeze
 
 game = Game.new
 
-game.play
+game.start_game
