@@ -8,16 +8,6 @@ class Game
     @used_letters = []
   end
 
-  def create_code
-    loop do
-      break unless code.length < 5 || code.length > 12
-
-      @code = DICTIONARY[Random.rand(0...DICTIONARY.length)].upcase
-      @attempts_left = code.length
-      @current_progress = Array.new(code.length) { "_" }
-    end
-  end
-
   def start_game
     loop do
       puts "Do you want to start a new game or load a save file? [new/load]"
@@ -26,6 +16,8 @@ class Game
       return load_game if input == "LOAD"
     end
   end
+
+  private
 
   def new_game
     puts "Starting new game..."
@@ -40,6 +32,16 @@ class Game
     from_yaml(read_file)
     # puts code
     play
+  end
+
+  def create_code
+    loop do
+      break unless code.length < 5 || code.length > 12
+
+      @code = DICTIONARY[Random.rand(0...DICTIONARY.length)].upcase
+      @attempts_left = [9, (5 + (code.length / 2.0)).floor].min
+      @current_progress = Array.new(code.length) { "_" }
+    end
   end
 
   def play
