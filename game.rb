@@ -3,7 +3,7 @@ class Game
 
   def initialize
     @code = ""
-    @used_letters = %w[A B]
+    @used_letters = []
   end
 
   def create_code
@@ -22,13 +22,18 @@ class Game
     loop do
       show_progress
       play_round
-
-      break unless attempts_left > 0
+      if attempts_left == 0
+        puts "\nYou lost! No more attempts left."
+        break
+      elsif code == current_progress.join
+        puts "\nYou won! The secret word was #{code}"
+        break
+      end
     end
   end
 
   def show_progress
-    puts "Attempts left: #{attempts_left}, used letters: #{used_letters.join(' ')}\n\t#{current_progress.join(' ')}"
+    puts "\nAttempts left: #{attempts_left}, used letters: #{used_letters.join(' ')}\n\t#{current_progress.join(' ')}"
   end
 
   def play_round
@@ -55,6 +60,7 @@ class Game
       end
     end
     @attempts_left -= 1
+    @used_letters.push(letter)
   end
 
   def find_char_indexes(string, char, start = 0)
