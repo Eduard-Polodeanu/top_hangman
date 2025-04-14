@@ -28,6 +28,12 @@ class Game
 
   def load_game
     puts "Loading game from save file..."
+
+    unless File.exist?("save_file.yml")
+      puts "Save file not found!"
+      return
+    end
+
     read_file = File.read("save_file.yml")
     from_yaml(read_file)
     # puts code
@@ -51,7 +57,7 @@ class Game
       if code == current_progress.join
         puts "\nYou won! The secret word was #{code}"
         break
-      elsif attempts_left == 0
+      elsif attempts_left.zero?
         puts "\nYou lost! No more attempts left."
         break
       end
